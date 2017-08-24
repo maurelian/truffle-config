@@ -19,6 +19,13 @@ function Config(truffle_directory, working_directory, network) {
     from: null
   };
 
+  var default_solc_values = {
+    optimizer: {
+      enabled: true,
+      runs: 200
+    }
+  };
+
   this._values = {
     truffle_directory: truffle_directory || path.resolve(path.join(__dirname, "../")),
     working_directory: working_directory || process.cwd(),
@@ -37,12 +44,6 @@ function Config(truffle_directory, working_directory, network) {
       registry: "0x8011df4830b4f696cd81393997e5371b93338878",
       install_provider_uri: "https://ropsten.infura.io/truffle"
     },
-    solc: {
-      optimizer: {
-        enabled: true,
-        runs: 200
-      }
-    },
     logger: {
       log: function() {},
     }
@@ -59,7 +60,6 @@ function Config(truffle_directory, working_directory, network) {
     resolver: function() {},
     artifactor: function() {},
     ethpm: function() {},
-    solc: function() {},
     logger: function() {},
 
     build_directory: function() {
@@ -165,6 +165,18 @@ function Config(truffle_directory, working_directory, network) {
       },
       set: function(val) {
         throw new Error("Don't set config.provider directly. Instead, set config.networks and then set config.networks[<network name>].provider")
+      }
+    },
+    solc: {
+      get: function() {
+        try {
+          return self.network_config.solc;
+        } catch (e) {
+          return default_solc_values.solc;
+        }
+      },
+      set: function(val) {
+        throw new Error("Don't set config.solc directly. Instead, set config.networks and then config.networks[<network name>].gas")
       }
     }
   };
